@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import views as auth_views
+from django.utils.deprecation import MiddlewareMixin
 
 from axes.decorators import watch_login
 
 
-class FailedLoginMiddleware(object):
+class FailedLoginMiddleware(MiddlewareMixin):
     def __init__(self, *args, **kwargs):
         super(FailedLoginMiddleware, self).__init__(*args, **kwargs)
 
@@ -12,7 +13,7 @@ class FailedLoginMiddleware(object):
         auth_views.login = watch_login(auth_views.login)
 
 
-class ViewDecoratorMiddleware(object):
+class ViewDecoratorMiddleware(MiddlewareMixin):
     """
     When the django_axes middleware is installed, by default it watches the
     django.auth.views.login.
