@@ -25,6 +25,8 @@ try:
 except ImportError: # django >= 1.7
     SiteProfileNotAvailable = type('SiteProfileNotAvailable', (Exception,), {})
 
+from functools import partial
+
 from axes.models import AccessLog
 from axes.models import AccessAttempt
 from axes.signals import user_locked_out
@@ -276,8 +278,13 @@ def watch_login(func):
 
     def decorated_login(request, *args, **kwargs):
         # share some useful information
-        if func.__name__ != 'decorated_login' and VERBOSE:
-            log.info('AXES: Calling decorated function: %s' % func.__name__)
+        try:
+            func_name = func.__name__
+        except AttributeError as e:
+            if isinstance(func, partial):
+                func_name = func.func.__name__
+        if func_name != 'decorated_login' and VERBOSE:
+            log.info('AXES: Calling decorated function: %s' % func_name)
             if args:
                 log.info('args: %s' % str(args))
             if kwargs:
@@ -300,7 +307,7 @@ def watch_login(func):
         # call the login function
         response = func(request, *args, **kwargs)
 
-        if func.__name__ == 'decorated_login':
+        if func_name == 'decorated_login':
             # if we're dealing with this function itself, don't bother checking
             # for invalid login attempts.  I suppose there's a bunch of
             # recursion going on here that used to cause one failed login
