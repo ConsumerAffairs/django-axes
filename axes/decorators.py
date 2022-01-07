@@ -278,12 +278,13 @@ def watch_login(func):
 
     def decorated_login(request, *args, **kwargs):
         # share some useful information
+        func_name = None
         try:
             func_name = func.__name__
         except AttributeError as e:
             if isinstance(func, partial):
                 func_name = func.func.__name__
-        if func_name != 'decorated_login' and VERBOSE:
+        if VERBOSE and func_name != 'decorated_login':
             log.info('AXES: Calling decorated function: %s' % func_name)
             if args:
                 log.info('args: %s' % str(args))
