@@ -441,13 +441,15 @@ def check_request(request, login_unsuccessful):
     if failures >= FAILURE_LIMIT and LOCK_OUT_AT_FAILURE and user_lockable:
         # We log them out in case they actually managed to enter the correct
         # password
-        if django.VERSION[:2] < (2,):
-            is_authenticated = request.user.is_authenticated()
-        else:
-            is_authenticated = request.user.is_authenticated
+        if hasattr(request, "user"):
+            if django.VERSION[:2] < (2,):
+                is_authenticated = request.user.is_authenticated()
+            else:
+                is_authenticated = request.user.is_authenticated
 
-        if hasattr(request, "user") and is_authenticated:
-            logout(request)
+            if is_authenticated:
+                logout(request)
+
         log.warn('AXES: locked out %s after repeated login attempts.' %
                  (ip_address,))
         # send signal when someone is locked out.
