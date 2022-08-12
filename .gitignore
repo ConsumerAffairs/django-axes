@@ -10,3 +10,4 @@ examples/media/
 examples/static/
 examples/example/local_settings.py
 .idea/
+.tox/

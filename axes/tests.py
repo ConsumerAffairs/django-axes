@@ -4,8 +4,7 @@ import time
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.core.urlresolvers import NoReverseMatch
-from django.core.urlresolvers import reverse
+from django.urls import reverse, NoReverseMatch
 
 from axes.decorators import COOLOFF_TIME
 from axes.decorators import FAILURE_LIMIT
@@ -19,7 +18,7 @@ class AccessAttemptTest(TestCase):
     """
     VALID_PASSWORD = 'valid-password'
     LOCKED_MESSAGE = 'Account locked: too many login attempts.'
-    LOGIN_FORM_KEY = '<input type="submit" value="Log in" />'
+    LOGIN_FORM_KEY = '<input type="submit" value="Log in">'
 
     def _login(self, is_valid=False, user_agent='test-browser'):
         """Login a user. A valid credential is used when is_valid is True,
