@@ -9,3 +9,4 @@ examples/logs/
 examples/media/
 examples/static/
 examples/example/local_settings.py
+.idea/
