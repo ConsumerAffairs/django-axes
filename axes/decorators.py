@@ -9,7 +9,7 @@ from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.utils import timezone as datetime
 from django.utils.translation import ugettext_lazy
@@ -32,7 +32,6 @@ from axes.models import AccessLog
 from axes.models import AccessAttempt
 from axes.signals import user_locked_out
 import axes
-from django.utils import six
 
 
 # see if the user has overridden the failure limit
@@ -169,7 +168,7 @@ def query2str(items, max_length=1024):
     kvs = []
     for k, v in items:
         if k != PASSWORD_FORM_FIELD:
-            kvs.append(six.u('%s=%s') % (k, v))
+            kvs.append('%s=%s' % (k, v))
 
     return '\n'.join(kvs)[:max_length]
 
@@ -335,7 +334,7 @@ def watch_login(func):
                 trusted=not login_unsuccessful,
             )
             if check_request(request, login_unsuccessful):
-                return response
+                 return response
 
             return lockout_response(request)
 
@@ -351,8 +350,7 @@ def lockout_response(request):
             'failure_limit': FAILURE_LIMIT,
             'username': request.POST.get(USERNAME_FORM_FIELD, '')
         }
-        return render_to_response(LOCKOUT_TEMPLATE, context,
-                                  context_instance=RequestContext(request))
+        return render(request, LOCKOUT_TEMPLATE, context)
 
     LOCKOUT_URL = get_lockout_url()
     if LOCKOUT_URL:

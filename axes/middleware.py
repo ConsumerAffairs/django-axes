@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import views as auth_views
+from django.utils.decorators import method_decorator
 from django.utils.deprecation import MiddlewareMixin
 
 from axes.decorators import watch_login
@@ -9,8 +10,11 @@ class FailedLoginMiddleware(MiddlewareMixin):
     def __init__(self, *args, **kwargs):
         super(FailedLoginMiddleware, self).__init__(*args, **kwargs)
 
+        @method_decorator(watch_login, name='dispatch')
+        class LoginView(auth_views.LoginView):
+            pass
         # watch the auth login
-        auth_views.login = watch_login(auth_views.login)
+        auth_views.LoginView = LoginView
 
 
 class ViewDecoratorMiddleware(MiddlewareMixin):
@@ -19,7 +23,7 @@ class ViewDecoratorMiddleware(MiddlewareMixin):
     django.auth.views.login.
 
     This middleware allows adding protection to other views without the need
-    to change any urls or dectorate them manually.
+    to change any urls or decorate them manually.
 
     Add this middleware to your MIDDLEWARE settings after
     `axes.middleware.FailedLoginMiddleware` and before the django
